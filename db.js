@@ -16,14 +16,13 @@ if (process.env.NODE_ENV === "test") {
   DB_URI = process.env.DB_URI;
 }
 
-// Create a PostgreSQL connection pool
 const pool = new Pool({
-    connectionString: DB_URI,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    port: process.env.DB_PORT,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
-
 // Check if connected to PostgreSQL
 pool.connect((err, client, release) => {
     if (err) {
