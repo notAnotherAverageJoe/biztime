@@ -1,23 +1,24 @@
-/** Database setup for BizTime. */
+const express = require('express');
+const { Pool } = require('pg');
+const app = express();
+const dotenv = require('dotenv'); // Load environment variables from .env file
 
-const { Client } = require("pg");
+// Load environment variables from .env file
+dotenv.config();
 
-const client = new Client({
-  connectionString: "postgresql://joseph:Buddha14!@localhost/biztime"
+// Create a PostgreSQL connection pool
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    port: process.env.DB_PORT,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
-
-client.connect()
-  .then(() => {
-    console.log("Connected to the database successfully.");
-
-    // Perform a test query to ensure the connection works
-    return client.query("SELECT NOW()");
-  })
-  .then((result) => {
-    console.log("Current time from database:", result.rows[0]);
-  })
-  .catch((err) => {
-    console.error("Connection error", err.stack);
-  });
-
-module.exports = client;
+// Check if connected to PostgreSQL
+pool.connect((err, client, release) => {
+    if (err) {
+        return console.error('Error acquiring client', err.stack);
+    }
+    console.log('Connected to PostgreSQL database');
+    client.release(); // Release the client back to the pool
+});
